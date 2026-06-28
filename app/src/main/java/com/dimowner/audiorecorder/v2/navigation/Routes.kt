@@ -10,7 +10,9 @@ object Routes {
     const val LOST_RECORDS_SCREEN = "LOST_RECORDS_SCREEN"
     const val WELCOME_SCREEN = "WELCOME_SCREEN"
     const val WELCOME_SETUP_SETTINGS_SCREEN = "WELCOME_SETUP_SETTINGS_SCREEN"
+    const val OVERDUB_SCREEN = "OVERDUB_SCREEN"
 
     const val RECORD_INFO = "RECORD_INFO"
     const val LOST_RECORD_IDS = "lost_record_ids"
+    const val OVERDUB_BASE_RECORD_ID = "overdub_base_record_id"
 }

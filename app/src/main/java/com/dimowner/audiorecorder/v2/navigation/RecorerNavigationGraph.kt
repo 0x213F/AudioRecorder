@@ -30,6 +30,8 @@ import com.dimowner.audiorecorder.v2.app.info.RecordInfoScreen
 import com.dimowner.audiorecorder.v2.app.info.RecordInfoViewModel
 import com.dimowner.audiorecorder.v2.app.lostrecords.LostRecordsScreen
 import com.dimowner.audiorecorder.v2.app.lostrecords.LostRecordsViewModel
+import com.dimowner.audiorecorder.v2.app.overdub.OverdubScreen
+import com.dimowner.audiorecorder.v2.app.overdub.OverdubViewModel
 import com.dimowner.audiorecorder.v2.app.records.RecordsScreen
 import com.dimowner.audiorecorder.v2.app.records.RecordsViewModel
 import com.dimowner.audiorecorder.v2.app.settings.SettingsScreen
@@ -72,6 +74,9 @@ fun RecorderNavigationGraph(
                 showLostRecordsScreen = { lostRecord ->
                     val idsString = lostRecord.id.toString()
                     navController.navigate("${Routes.LOST_RECORDS_SCREEN}/$idsString")
+                },
+                showOverdubScreen = {
+                    navController.navigate("${Routes.OVERDUB_SCREEN}/${homeViewModel.getActiveRecordId()}")
                 },
                 uiState = homeViewModel.state.value,
                 event = homeViewModel.event,
@@ -148,6 +153,27 @@ fun RecorderNavigationGraph(
                         onSwitchToLegacyApp()
                     }
                 }
+            )
+        }
+        composable(
+            "${Routes.OVERDUB_SCREEN}/{${Routes.OVERDUB_BASE_RECORD_ID}}",
+            arguments = listOf(
+                navArgument(Routes.OVERDUB_BASE_RECORD_ID) {
+                    type = NavType.LongType
+                }
+            )
+        ) { backStackEntry ->
+            val overdubViewModel: OverdubViewModel = hiltViewModel()
+            val baseRecordId = backStackEntry.arguments?.getLong(Routes.OVERDUB_BASE_RECORD_ID) ?: -1L
+            LaunchedEffect(baseRecordId) {
+                overdubViewModel.init(baseRecordId)
+            }
+            OverdubScreen(
+                onPopBackStack = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() },
+                uiState = overdubViewModel.state.value,
+                event = overdubViewModel.event,
+                onAction = { overdubViewModel.onAction(it) },
             )
         }
         composable(Routes.WELCOME_SCREEN) {
