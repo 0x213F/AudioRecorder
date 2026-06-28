@@ -171,4 +171,58 @@ class PcmMixerTest {
         assertTrue("220Hz component must be present, was ${correlate(220.0)}", correlate(220.0) > 1000)
         assertTrue("660Hz component must be present, was ${correlate(660.0)}", correlate(660.0) > 1000)
     }
+
+    // ── stereo / interleaving ──────────────────────────────────────────────────
+
+    @Test
+    fun `interleaved stereo channels are summed positionally`() {
+        // Two stereo streams: samples are L,R,L,R. Positional mixing keeps L with L and R with R.
+        val base = pcm(100, 200, 300, 400)
+        val layer = pcm(10, 20, 30, 40)
+        val out = samples(PcmMixer.mix(base, layer))
+        assertEquals(listOf(110, 220, 330, 440), out.toList())
+    }
+
+    // ── offset alignment edge ─────────────────────────────────────────────────
+
+    @Test
+    fun `odd byte offset is rounded down to a whole sample boundary`() {
+        // 3 bytes rounds to 2 (one 16-bit sample), so the layer lands on sample index 1.
+        val base = pcm(10, 20, 30)
+        val layer = pcm(5)
+        val out = samples(PcmMixer.mix(base, layer, layerOffsetBytes = 3))
+        assertEquals(listOf(10, 25, 30), out.toList())
+    }
+
+    // ── clipping boundary (sum lands exactly on the limit) ─────────────────────
+
+    @Test
+    fun `a sum landing exactly on the max is preserved, not clamped further`() {
+        assertEquals(32767, samples(PcmMixer.mix(pcm(30000), pcm(2767)))[0])
+        assertEquals(-32768, samples(PcmMixer.mix(pcm(-30000), pcm(-2768)))[0])
+    }
+
+    // ── gain on both layers / empties ──────────────────────────────────────────
+
+    @Test
+    fun `both layers attenuated then summed`() {
+        // 1000*0.5 + 2000*0.5 = 1500
+        assertEquals(1500, samples(PcmMixer.mix(pcm(1000), pcm(2000), baseGain = 0.5f, layerGain = 0.5f))[0])
+    }
+
+    @Test
+    fun `mixing two empty streams yields an empty result`() {
+        assertEquals(0, PcmMixer.mix(ByteArray(0), ByteArray(0)).size)
+    }
+
+    @Test
+    fun `negative gain is rejected`() {
+        var threw = false
+        try {
+            PcmMixer.mix(pcm(1), pcm(1), baseGain = -1f)
+        } catch (e: IllegalArgumentException) {
+            threw = true
+        }
+        assertTrue("expected IllegalArgumentException for negative gain", threw)
+    }
 }
