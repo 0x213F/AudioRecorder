@@ -100,6 +100,7 @@ internal fun HomeScreen(
     showSettingsScreen: () -> Unit,
     showRecordInfoScreen: (String) -> Unit,
     showLostRecordsScreen: (Record) -> Unit,
+    showOverdubScreen: () -> Unit = {},
     uiState: HomeScreenState,
     event: SharedFlow<HomeScreenEvent?>,
     onAction: (HomeScreenAction) -> Unit
@@ -261,6 +262,10 @@ internal fun HomeScreen(
 
                     HomeDropDownMenuItemId.OPEN_WITH -> {
                         onAction(HomeScreenAction.OpenActiveRecordWithAnotherApp)
+                    }
+
+                    HomeDropDownMenuItemId.OVERDUB -> {
+                        showOverdubScreen()
                     }
 
                     HomeDropDownMenuItemId.SAVE_AS -> {

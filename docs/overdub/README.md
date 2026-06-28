@@ -30,16 +30,43 @@ on `HomeScreen`** (no new screen): an Overdub button in the active-record transp
 
 ## What is in this branch as working code
 
-- **`v2/audio/overdub/PcmMixer.kt`** — the keystone: pure 16-bit-PCM mixer (sum + per-layer gain
-  + clipping clamp + time-offset alignment). No Android/coroutine/file dependencies.
-- **`v2/audio/overdub/PcmMixerTest.kt`** (test source set) — JUnit4 tests proving summation,
-  clipping, alignment, gain, odd-byte robustness, and a two-tone "both layers survive" check.
+**Engine (`v2/audio/overdub/`)**
+- **`PcmMixer.kt`** — the keystone: pure 16-bit-PCM mixer (sum + per-layer gain + clipping clamp +
+  time-offset alignment). No Android/coroutine/file dependencies.
+- **`PcmMixerTest.kt`** (test source set) — JUnit4 tests proving summation, clipping, alignment,
+  gain, odd-byte robustness, and a two-tone "both layers survive" check.
+- **`OverdubRecorder.kt`** — always-PCM mic capture to a temp WAV (implements `RecorderV2`).
+- **`PcmDecoder.kt`** — standalone MediaExtractor+MediaCodec decode of any base file to raw PCM.
+- **`OverdubMixer.kt`** — offline decode → mix → WAV orchestration on `@IoDispatcher`.
 
-Run the test with:
+**Feature (`v2/app/overdub/`)**
+- **`OverdubContract.kt`** — state/action/event + `OverdubStage` machine.
+- **`OverdubViewModel.kt`** — `@HiltViewModel` orchestrating monitor-playback + capture + offline
+  mix + audition + save (inserts a new "Overdub of X" record and triggers the existing decode for
+  the waveform).
+- **`OverdubScreen.kt`** — Compose screen for the ARMED → CAPTURING → MIXING → REVIEW flow,
+  headphone advisory + discard dialogs, routing chip.
+
+**Wiring** — `Routes.kt` (+`OVERDUB_SCREEN`), `RecorerNavigationGraph.kt` (route registration),
+Home overflow menu entry (`HomeDropDownMenuItemId` + `HomeExtensions` + `HomeScreen` handler +
+`HomeViewModel.getActiveRecordId()`), `strings.xml`, `ic_overdub.xml`.
+
+Run the keystone test with:
 
 ```bash
 ./gradlew testDebugConfigDebugUnitTest --tests "*PcmMixerTest"
 ```
+
+### Deviations from the UX spec (and why)
+
+- **Dedicated `OverdubScreen` route, not an in-place HomeScreen mode.** The UX spec preferred an
+  in-place mode, but `HomeViewModel`/`HomeScreen` are ~1400/~1000 lines; isolating overdub in its
+  own screen+ViewModel keeps the change reviewable and matches the recon's code-org recommendation.
+- **Entry point = Home overflow menu** ("Overdub" item), not a transport-row button — the Home
+  playback controls are an inline `PlayPanel`, and the menu is the lowest-risk contained entry.
+- **MVP cuts kept:** capture starts at 0:00 (mix offset 0), unity gain, monitoring via a private
+  player, capture without a dedicated foreground service (screen stays on), lineage via the record
+  **name** (no `parentRecordId` column / Room migration), session-scoped "don't ask again".
 
 ## Verification status — read this
 

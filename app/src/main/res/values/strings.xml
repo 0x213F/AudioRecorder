@@ -448,4 +448,25 @@
     <string name="navigate_back">Navigate back</string>
     <!-- Dropdown menu button description -->
     <string name="dropdown_menu">Menu</string>
+
+    <!-- Overdub feature -->
+    <string name="overdub">Overdub</string>
+    <string name="overdub_of_record">Overdub of %1$s</string>
+    <string name="overdub_arm_hint">Put on headphones, then start. The base track plays while you record a new layer over it.</string>
+    <string name="overdub_start">Start overdub</string>
+    <string name="overdub_redo">Redo</string>
+    <string name="overdub_stop_and_mix">Stop &amp; mix</string>
+    <string name="overdub_mixing">Mixing overdub…</string>
+    <string name="overdub_retry">Retry</string>
+    <string name="overdub_save">Save</string>
+    <string name="overdub_discard_title">Discard this take?</string>
+    <string name="overdub_discard_body">Your recorded layer hasn\'t been saved. Discard it and leave overdub?</string>
+    <string name="overdub_discard_confirm">Discard</string>
+    <string name="overdub_discard_keep">Keep editing</string>
+    <string name="overdub_headphone_title">Use headphones</string>
+    <string name="overdub_headphone_body">Playing the base track through the speaker can feed back into your recording. For a clean overdub, plug in or pair headphones before you start.</string>
+    <string name="overdub_headphone_dont_ask">Don\'t show again</string>
+    <string name="overdub_monitor_headphones">Monitoring: Headphones</string>
+    <string name="overdub_monitor_bluetooth">Monitoring: Bluetooth</string>
+    <string name="overdub_monitor_speaker">Speaker — feedback risk</string>
 </resources>

@@ -37,6 +37,9 @@ fun getHomeDroDownMenuItems(): List<DropDownMenuItem<HomeDropDownMenuItemId>> {
             HomeDropDownMenuItemId.OPEN_WITH -> DropDownMenuItem(
                 id = it, textResId = R.string.open_with, imageResId = R.drawable.ic_open_with
             )
+            HomeDropDownMenuItemId.OVERDUB -> DropDownMenuItem(
+                id = it, textResId = R.string.overdub, imageResId = R.drawable.ic_overdub
+            )
             HomeDropDownMenuItemId.SAVE_AS -> DropDownMenuItem(
                 id = it, textResId = R.string.save_as, imageResId = R.drawable.ic_save_alt
             )

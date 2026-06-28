@@ -1139,6 +1139,9 @@ class HomeViewModel @Inject constructor(
         _state.value = _state.value.copy(isShowLoadingProgress = value)
     }
 
+    /** The currently active (selected/playing) record id, used to launch overdub on it. */
+    fun getActiveRecordId(): Long = prefs.activeRecordId
+
     @SuppressWarnings("CyclomaticComplexMethod")
     fun onAction(action: HomeScreenAction) {
         when (action) {
